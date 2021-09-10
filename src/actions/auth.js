@@ -1,13 +1,23 @@
-import { createUserWithEmailAndPassword, getAuth, signInWithPopup, updateCurrentUser, updateProfile } from "@firebase/auth"
+import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, signInWithPopup, updateProfile } from "@firebase/auth"
 import { googleAuthProvider } from "../firebase/firebaseConfig"
 import { types } from "../types/types"
+import { finishLoading, startLoading } from "./ui"
 
 export const startLoginEmailPassword = (email, password) => {
     return (dispatch) => {
-        setTimeout(() => {
-            dispatch(login('12345', 'Pedro'))
-        }, 3500)
 
+        dispatch( startLoading() )
+
+        const auth = getAuth()
+        signInWithEmailAndPassword(auth,email,password)
+            .then( ({ user }) =>{
+                dispatch( login( user.uid, user.displayName ))
+                dispatch( finishLoading() )
+            })
+            .catch( e => {
+                dispatch( finishLoading() )
+                console.log(e)
+            })
     }
 }
 
@@ -19,7 +29,6 @@ export const startRegisterWithEmailAndPassword = (email,password,name) => {
             await updateProfile(user, {
                 displayName: name
             })
-            console.log(user)
             dispatch(login(user.uid, user.displayName))
         });
     }
@@ -42,3 +51,14 @@ export const login = (uid, displayName) => ({
     }
 })
 
+export const startLogout = () => {
+    return async (dispatch) => {
+        await getAuth().signOut()
+
+        dispatch( logout() )
+    }
+}
+
+export const logout = () => ({
+    type: types.logout
+})
