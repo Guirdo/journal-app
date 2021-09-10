@@ -23,7 +23,6 @@ export const AppRouter = () => {
     useEffect(() => {
         getAuth().onAuthStateChanged((user) => {
             if (user?.uid) {
-                console.log(user)
                 dispatch(login(user.uid, user.displayName))
                 setIsLoggedIn(true)
             } else {
@@ -51,7 +50,7 @@ export const AppRouter = () => {
                     />
 
                     <PublicRoute 
-                        path="/auth/login"
+                        path="/auth"
                         component={ AuthRouter }
                         isAuthenticated={ isLoggedIn }
                     />
